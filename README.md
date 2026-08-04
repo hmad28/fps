@@ -1,120 +1,55 @@
-# 🎯 Blacksite: Fallen City — 3D Browser FPS Game
+# BLACKSITE: FRONTLINE DESCENT
 
-An action-packed, fast-paced 3D First-Person Shooter (FPS) game built for the web using **Three.js**, **React 19**, **TypeScript**, and **Vite**. Features 3D GLTF character & mecha models with skeletal animation, tactical movement mechanics, interactive campaign objectives, dynamic day/night atmospheric weather systems, and synthesized audio effects.
+An original first-person science-fiction operation sandbox built with React, TypeScript, Three.js, and Vite. The current release is a focused Forge City vertical slice: deploy from the ASC Valiant, cross an independently populated battlefield, dismantle an Iron Choir command uplink, and physically extract.
 
----
+## Vertical slice
 
-## ✨ Features & Highlights
+- Carrier deployment terminal with armor and insertion selection
+- 420 m Forge City operation region with authored industrial sites, POIs, outposts, roads, cover, and negative space
+- Independent patrols with vision cones, line-of-sight, hearing, investigation, local knowledge, and avoidance opportunities
+- Four Iron Choir combat roles: Legion Rifleman, Rocket Legionary, Bulwark Gunner, and Red Reaper, plus the heavy Forge Enforcer
+- Interruptible reinforcement flare and physical dropship approach, hover, troop drop, departure, damage, and crash behavior
+- Destructible production structures that create units until destroyed
+- Multi-step uplink objective: destroy fabricator, reroute power, sever relays, and purge command lattice
+- POI rewards including carried samples and a recoverable anti-armor launcher
+- Sixteen defined Command Support systems; the slice equips Kinetic Lance, Supply Capsule, Rook VTOL, and Autocannon Sentry
+- Physical thrown support beacons, arrivals, danger zones, and player-damaging friendly fire
+- Tactical magazine discard, chambered rounds, stance/movement accuracy, recoil, armor penetration, component damage, stamina, injuries, and armor weight
+- Extraction authorization code, converging field forces, physical shuttle landing, boarding, departure, and operation report
 
-- 🤖 **3D GLTF Models & Skeletal Animations**: 
-  - Integrated animated 3D **Soldier** models for infantry scouts, troopers, and marksmen.
-  - Integrated animated 3D **Robot Mecha** models for heavy enforcers and the Warden Boss.
-- ⚡ **Tactical Movement & Combat Physics**:
-  - High-velocity **Dash** with camera FOV punch.
-  - Tactical **Slide** with dynamic friction decay when crouching during a sprint.
-  - **Iron Sights Aim Down Sights (ADS)** with smooth camera zoom.
-- 🔫 **Arsenal & Weapons**:
-  - **Tactical Pistol**: Fast sidearm precision.
-  - **Assault Rifle**: Automatic rapid-fire rifle with recoil recovery.
-  - **Double-Barrel Shotgun**: High close-range pellet spread damage.
-  - **Cyber Sniper**: High-caliber long-range scope precision.
-  - **Rocket Launcher (Bazooka)**: Explosive area-of-effect damage.
-- 💥 **Tactical Abilities**:
-  - **EMP Shockwave**: Electric wave blast that stuns surrounding enemies in a 14m radius.
-  - **Frag Grenade**: Physical parabolic arc grenade toss with area damage.
-- 🌆 **Atmospheric World & Campaign**:
-  - Dynamic procedural **Day/Night Cycle** (Dusk, Midnight, Storm, Dawn).
-  - 5 Campaign Stages with terminal console hacks, keycards, jammer overrides, and extraction LZ portals.
-- 🎧 **Synthesized Audio Engine**:
-  - Custom Web Audio API sound synthesizer for gunshots, reload chimes, footstep swishes, dash swooshes, and hit markers.
-- 🗺️ **Tactical HUD & Minimap**:
-  - Live minimap radar with real-time enemy positions, objective markers, health/shield bars, killfeed, and headshot hit indicators.
+This is a solo MVP. Systems use a four-operator squad ceiling, but the project does not claim online multiplayer.
 
----
+## Controls
 
-## 🎮 Controls
+| Action | Input |
+| --- | --- |
+| Move / look | `WASD` / mouse |
+| Fire / ADS | Mouse 1 / Mouse 2 |
+| Sprint | `Shift` |
+| Crouch / prone | `Ctrl` / `Z` |
+| Vault / contextual jump | `Space` |
+| Combat dive | `Alt` |
+| Interact | `E` |
+| Reload | `R` |
+| Med-injector | `X` |
+| Command Support | Hold `Q`, then enter the shown WASD sequence |
+| Tactical map | `M` |
+| Weapon slots | `1`, `2`, `3` or mouse wheel |
 
-| Action | Keyboard / Mouse |
-| :--- | :--- |
-| **Movement** | `W` `A` `S` `D` |
-| **Look / Aim** | `Mouse Movement` |
-| **Fire Weapon** | `Left Click` |
-| **Aim Down Sights (ADS)** | `Right Click` |
-| **Sprint** | `Left Shift` |
-| **Crouch / Slide** | `C` |
-| **Jump** | `Spacebar` |
-| **Dash Burst** | `F` |
-| **EMP Shockwave** | `E` |
-| **Throw Grenade** | `G` |
-| **Reload** | `R` |
-| **Switch Weapon** | `1` `2` `3` `4` `5` |
+## Run and verify
 
----
+```bash
+npm install
+npm run dev
+npm run lint
+npm run build
+npx tsx scripts/gameplay_checks.ts
+```
 
-## 🚀 Tech Stack
+The development server runs at `http://localhost:3000`.
 
-- **Framework**: [React 19](https://react.dev/) + [Vite 6](https://vitejs.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **3D Graphics Engine**: [Three.js](https://threejs.org/) (WebGL, PCF Soft Shadows, FogExp2)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Icons & Animations**: [Lucide React](https://lucide.dev/), [Framer Motion](https://www.framer.com/motion/)
+## Assets and licensing
 
----
+Runtime 3D assets are local—there are no model hotlinks. Environment and weapon modules come from Kenney's CC0 Space Station and Blaster kits. The animated robot base is Tomás Laulhé's CC0 RobotExpressive model, with Don McCurdy's modifications. Every runtime model and dependent texture is recorded in [`src/game/assets/asset-manifest.json`](src/game/assets/asset-manifest.json); the original Kenney license files are stored beside the runtime assets.
 
-## 💻 Getting Started Locally
-
-### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm or bun
-
-### Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/hmad28/fps.git
-   cd fps
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Set Environment Variables**:
-   Copy `.env.example` to `.env.local` and add your Gemini API Key if using AI features:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-4. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open your browser at `http://localhost:3000`.
-
-5. **Build for production**:
-   ```bash
-   npm run build
-   ```
-
----
-
-## 🌐 Deploying to Production
-
-This is a static web application and can be hosted for **100% FREE** on modern web hosting platforms:
-
-### Deploy to Vercel (Recommended)
-1. Push your code to GitHub.
-2. Go to [Vercel](https://vercel.com) and click **"Add New Project"**.
-3. Import the `hmad28/fps` repository.
-4. Click **Deploy**.
-
-### Deploy to Netlify
-1. Run `npm run build` locally to generate the `dist` folder.
-2. Go to [Netlify](https://netlify.com) and drag & drop the `dist` folder into **Sites**.
-
----
-
-## 📜 License
-
-Distributed under the MIT License. Feel free to modify and expand the game!
+No Helldivers names, insignia, models, icons, UI, characters, or extracted game assets are used.

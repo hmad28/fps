@@ -12,8 +12,8 @@ export interface InjuryState {
 export class PlayerHealth {
   public maxHealth: number = 100;
   public health: number = 100;
-  public maxShield: number = 50;
-  public shield: number = 50;
+  public maxShield: number = 0;
+  public shield: number = 0;
 
   public injuries: InjuryState = {
     head: false,
@@ -30,17 +30,6 @@ export class PlayerHealth {
 
   public takeDamage(amount: number, zone: BodyZone = 'TORSO'): boolean {
     let actualDamage = amount;
-
-    // Apply to shield first
-    if (this.shield > 0) {
-      if (this.shield >= actualDamage) {
-        this.shield -= actualDamage;
-        return false;
-      } else {
-        actualDamage -= this.shield;
-        this.shield = 0;
-      }
-    }
 
     this.health = Math.max(0, this.health - actualDamage);
 
@@ -65,7 +54,6 @@ export class PlayerHealth {
 
     this.medInjectors--;
     this.health = Math.min(this.maxHealth, this.health + 75);
-    this.shield = Math.min(this.maxShield, this.shield + 25);
 
     // Repair all physical injuries
     this.injuries = {
@@ -98,9 +86,6 @@ export class PlayerHealth {
     if (this.staminaBoostTimer > 0) {
       this.staminaBoostTimer = Math.max(0, this.staminaBoostTimer - dt);
     }
-    // Shield slow auto-recharge if uninjured
-    if (this.shield < this.maxShield && !this.injuries.torso) {
-      this.shield = Math.min(this.maxShield, this.shield + 3.0 * dt);
-    }
+    if (this.injuries.torso) this.health = Math.max(1, this.health - 0.45 * dt);
   }
 }

@@ -2,10 +2,15 @@ export type AIState =
   | 'IDLE'
   | 'PATROL'
   | 'INVESTIGATE'
+  | 'SUSPICIOUS'
   | 'ALERT'
   | 'ENGAGE'
+  | 'REPOSITION'
+  | 'FLANK'
   | 'CALL_REINFORCEMENT'
+  | 'SUPPRESSED'
   | 'STAGGERED'
+  | 'RETREAT'
   | 'DEAD';
 
 export type FactionType = 'brood' | 'iron' | 'astral';

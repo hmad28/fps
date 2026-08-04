@@ -16,7 +16,15 @@ export interface PlayerStats {
   isSupportOpen: boolean;
   objectiveText: string;
   extractionAvailable: boolean;
+  extractionCalled: boolean;
   extractionTimer: number;
+  extractionInput: ('UP' | 'DOWN' | 'LEFT' | 'RIGHT')[];
+  extractionTerminal: boolean;
+  supportCooldowns: Record<string, number>;
+  samples: number;
+  interactionPrompt: string | null;
+  alertLevel: 'LOW' | 'CONTACT' | 'HEAVY';
+  armorType: 'light' | 'medium' | 'heavy';
   injuries: {
     head: boolean;
     torso: boolean;
