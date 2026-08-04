@@ -594,6 +594,13 @@ export class FPSGameEngine {
       }
     }
 
+    gunGroup.traverse((child: any) => {
+      if (child.isMesh) {
+        child.frustumCulled = false;
+        child.castShadow = true;
+      }
+    });
+
     this.currentGunMesh = gunGroup;
     this.weaponGroup.add(this.currentGunMesh);
   }
@@ -2184,15 +2191,21 @@ export class FPSGameEngine {
       if (isRobot) {
         const scale = type === 'boss' ? 1.5 : (type === 'heavy' ? 1.05 : 0.75);
         clonedScene.scale.set(scale, scale, scale);
+        clonedScene.rotation.y = 0;
       } else {
         const scale = type === 'boss' ? 2.6 : (type === 'heavy' ? 2.2 : 1.8);
         clonedScene.scale.set(scale, scale, scale);
+        clonedScene.rotation.y = Math.PI; // Face forward in movement direction!
       }
 
       clonedScene.traverse((child: any) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          child.frustumCulled = false; // NEVER CULL/HIDE ENEMY MODELS!
+          if (child.material) {
+            child.material.depthWrite = true;
+          }
         }
       });
 
@@ -2201,6 +2214,28 @@ export class FPSGameEngine {
       clonedScene.position.y = -bbox.min.y;
 
       group.add(clonedScene);
+
+      // Attach Visible 3D Gun Model to Enemy's Hand
+      const enemyGunGroup = new THREE.Group();
+      const eGunBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.2 });
+      const eGunAccentMat = new THREE.MeshStandardMaterial({ color: isRobot ? 0xef4444 : 0x06b6d4, emissive: isRobot ? 0x991b1b : 0x0891b2 });
+
+      const receiverMesh = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.35), eGunBodyMat);
+      enemyGunGroup.add(receiverMesh);
+
+      const barrelMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.5, 8), eGunBodyMat);
+      barrelMesh.rotation.x = Math.PI / 2;
+      barrelMesh.position.set(0, 0.02, -0.35);
+      enemyGunGroup.add(barrelMesh);
+
+      const magMesh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.16, 0.08), eGunAccentMat);
+      magMesh.position.set(0, -0.1, -0.05);
+      enemyGunGroup.add(magMesh);
+
+      enemyGunGroup.name = 'gun';
+      enemyGunGroup.position.set(isRobot ? 0.45 : 0.28, isRobot ? 1.0 : 1.05, -0.3);
+      enemyGunGroup.traverse((c: any) => { if (c.isMesh) c.frustumCulled = false; });
+      group.add(enemyGunGroup);
 
       // Play walking/running animation
       if (gltfToUse.animations && gltfToUse.animations.length > 0) {
@@ -2232,6 +2267,7 @@ export class FPSGameEngine {
 
       group.position.set(enemy.position.x, 0, enemy.position.z);
       group.rotation.y = enemy.rotationY;
+      group.frustumCulled = false;
       this.scene.add(group);
       this.enemyMeshes.set(enemy.id, group);
       return;
