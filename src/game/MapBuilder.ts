@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Point3D } from '../types';
 
 export interface InteractiveConsole {
@@ -752,6 +753,109 @@ export function buildFPSMap(scene: THREE.Scene, districtOrBiome: string = 'colla
 
   // Patrol Routes Specific to each District
   const enemyPatrolRoutes = getCampaignPatrolRoutes(district);
+
+  // Load 3D Environment GLTF Props (Street Lamps, Crates, Vehicles)
+  const propLoader = new GLTFLoader();
+
+  // 1. 3D Street Lamps
+  propLoader.load(
+    '/models/lamp.glb',
+    (gltf) => {
+      const lampPositions = [
+        { x: -18, z: 12 }, { x: 18, z: 12 },
+        { x: -18, z: -12 }, { x: 18, z: -12 },
+        { x: -30, z: 0 }, { x: 30, z: 0 },
+      ];
+      lampPositions.forEach((pos) => {
+        const lamp = gltf.scene.clone();
+        lamp.scale.set(0.015, 0.015, 0.015);
+        const bbox = new THREE.Box3().setFromObject(lamp);
+        lamp.position.set(pos.x, -bbox.min.y, pos.z);
+        lamp.traverse((c: any) => {
+          if (c.isMesh) {
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+        scene.add(lamp);
+
+        const light = new THREE.PointLight(0xf59e0b, 2.5, 18);
+        light.position.set(pos.x, 4.5, pos.z);
+        scene.add(light);
+        pointLamps.push(light);
+
+        const colliderBox = new THREE.Box3().setFromCenterAndSize(
+          new THREE.Vector3(pos.x, 2.25, pos.z),
+          new THREE.Vector3(1.2, 4.5, 1.2)
+        );
+        obstacles.push(colliderBox);
+        obstacleMeshes.push(lamp);
+      });
+    },
+    undefined,
+    (err) => console.warn('Lamp GLB load error:', err)
+  );
+
+  // 2. 3D Supply Crates & Containers
+  propLoader.load(
+    '/models/crate.glb',
+    (gltf) => {
+      const cratePositions = [
+        { x: -8, z: 8, rot: 0.2 }, { x: 8, z: -8, rot: -0.4 },
+        { x: -22, z: -15, rot: 0.8 }, { x: 22, z: 15, rot: -0.1 },
+        { x: 0, z: -18, rot: 0.5 }, { x: -12, z: -25, rot: -0.3 },
+      ];
+      cratePositions.forEach((pos) => {
+        const crate = gltf.scene.clone();
+        crate.scale.set(0.8, 0.8, 0.8);
+        const bbox = new THREE.Box3().setFromObject(crate);
+        crate.position.set(pos.x, -bbox.min.y, pos.z);
+        crate.rotation.y = pos.rot;
+        crate.traverse((c: any) => {
+          if (c.isMesh) {
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+        scene.add(crate);
+        const crateBox = new THREE.Box3().setFromObject(crate);
+        obstacles.push(crateBox);
+        obstacleMeshes.push(crate);
+      });
+    },
+    undefined,
+    (err) => console.warn('Crate GLB load error:', err)
+  );
+
+  // 3. 3D Military Vehicles
+  propLoader.load(
+    '/models/vehicle.glb',
+    (gltf) => {
+      const vehPositions = [
+        { x: -22, z: 22, rot: Math.PI / 4 },
+        { x: 22, z: -22, rot: -Math.PI / 3 },
+      ];
+      vehPositions.forEach((pos) => {
+        const veh = gltf.scene.clone();
+        veh.scale.set(1.5, 1.5, 1.5);
+        const bbox = new THREE.Box3().setFromObject(veh);
+        veh.position.set(pos.x, -bbox.min.y, pos.z);
+        veh.rotation.y = pos.rot;
+        veh.traverse((c: any) => {
+          if (c.isMesh) {
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+        scene.add(veh);
+        const vehBox = new THREE.Box3().setFromObject(veh);
+        obstacles.push(vehBox);
+        obstacleMeshes.push(veh);
+      });
+    },
+    undefined,
+    (err) => console.warn('Vehicle GLB load error:', err)
+  );
 
   return {
     scene,

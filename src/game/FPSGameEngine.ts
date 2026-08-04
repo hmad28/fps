@@ -2196,6 +2196,10 @@ export class FPSGameEngine {
         }
       });
 
+      // Align model feet bottom to Y=0 to prevent sinking into ground
+      const bbox = new THREE.Box3().setFromObject(clonedScene);
+      clonedScene.position.y = -bbox.min.y;
+
       group.add(clonedScene);
 
       // Play walking/running animation
@@ -3567,6 +3571,13 @@ export class FPSGameEngine {
 
   // Trigger procedural physical ragdoll for defeated enemies
   private triggerRagdoll(meshGroup: THREE.Group, enemy: EnemyData, isHeadshot: boolean) {
+    // Stop walk/run animation mixer immediately on death
+    const mixer = this.enemyAnimationMixers.get(enemy.id);
+    if (mixer) {
+      mixer.stopAllAction();
+      this.enemyAnimationMixers.delete(enemy.id);
+    }
+
     // 1. Calculate impact direction from player to enemy
     const playerDirection = new THREE.Vector3()
       .copy(meshGroup.position)
