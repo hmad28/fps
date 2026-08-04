@@ -1,0 +1,8 @@
+{
+  "name": "Remix First Person Shooter",
+  "description": "3D FPS game with joystick movement, tap-to-shoot, weapon recoil, procedural audio, enemy AI with patrol routes, health system, ammo management, and multiple weapon types.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
