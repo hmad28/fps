@@ -56,7 +56,7 @@ export class MaterialNormalizer {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-        child.frustumCulled = false; // Prevent unwanted model culling
+        child.frustumCulled = true;
 
         if (child.material) {
           const mat = child.material;
@@ -64,6 +64,7 @@ export class MaterialNormalizer {
             mat.roughness = palette.roughness;
             mat.metalness = palette.metalness;
             mat.depthWrite = true;
+            mat.envMapIntensity = faction === 'iron' ? 0.7 : 0.45;
           }
         }
       }

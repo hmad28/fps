@@ -14,7 +14,7 @@ export interface PhysicalProjectile {
 export class ProjectileSystem {
   private projectiles: PhysicalProjectile[] = [];
 
-  public spawnRocket(spawnPos: THREE.Vector3, direction: THREE.Vector3, damage: number, scene: THREE.Scene) {
+  public spawnRocket(spawnPos: THREE.Vector3, direction: THREE.Vector3, damage: number, scene: THREE.Scene, flightTime = 2.5) {
     const group = new THREE.Group();
     const bodyGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.6, 12);
     const bodyMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 });
@@ -42,7 +42,7 @@ export class ProjectileSystem {
       damage,
       radius: 4.5,
       age: 0,
-      maxAge: 4.0,
+      maxAge: Math.max(0.12, flightTime),
       isFriendly: true,
     });
   }

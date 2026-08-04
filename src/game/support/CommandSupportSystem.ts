@@ -1,176 +1,71 @@
 import * as THREE from 'three';
+import { AssetLoader } from '../assets/AssetLoader';
 
 export type SupportCategory = 'ORBITAL' | 'AIR' | 'SUPPLY' | 'DEFENSIVE' | 'TACTICAL';
+export type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
+export interface SupportOption { id: string; name: string; category: SupportCategory; codeSequence: Direction[]; cooldown: number; callInDelay: number; description: string; }
 
-export interface SupportOption {
-  id: string;
-  name: string;
-  category: SupportCategory;
-  codeSequence: ('UP' | 'DOWN' | 'LEFT' | 'RIGHT')[];
-  cooldown: number; // seconds
-  callInDelay: number; // seconds before impact
-  description: string;
-}
+const support = (id: string, name: string, category: SupportCategory, codeSequence: Direction[], cooldown: number, callInDelay: number, description: string): SupportOption => ({ id, name, category, codeSequence, cooldown, callInDelay, description });
 
 export const SUPPORT_CATALOG: Record<string, SupportOption> = {
-  kinetic_lance: {
-    id: 'kinetic_lance',
-    name: 'Precision Kinetic Strike',
-    category: 'ORBITAL',
-    codeSequence: ['UP', 'RIGHT', 'DOWN', 'LEFT', 'UP'],
-    cooldown: 45,
-    callInDelay: 2.5,
-    description: 'High-velocity kinetic rod orbital tungsten beam.',
-  },
-  saturation_barrage: {
-    id: 'saturation_barrage',
-    name: 'Saturation Orbital Barrage',
-    category: 'ORBITAL',
-    codeSequence: ['RIGHT', 'DOWN', 'LEFT', 'UP', 'RIGHT'],
-    cooldown: 75,
-    callInDelay: 4.0,
-    description: 'Heavy explosive saturation bombardment across a 25m radius.',
-  },
-  supply_capsule: {
-    id: 'supply_capsule',
-    name: 'AEGIS Supply Pod Drop',
-    category: 'SUPPLY',
-    codeSequence: ['DOWN', 'DOWN', 'RIGHT', 'UP'],
-    cooldown: 60,
-    callInDelay: 3.0,
-    description: 'Physical resupply capsule containing ammo, grenades, and med-injectors.',
-  },
-  vtol_strafe: {
-    id: 'vtol_strafe',
-    name: 'VTOL Autocannon Flyby',
-    category: 'AIR',
-    codeSequence: ['UP', 'LEFT', 'RIGHT', 'DOWN'],
-    cooldown: 50,
-    callInDelay: 2.0,
-    description: 'AEGIS strike craft performs a low-altitude 30mm strafing run.',
-  },
-  heavy_bomb: {
-    id: 'heavy_bomb',
-    name: '500kg Bunker Buster Ordnance',
-    category: 'AIR',
-    codeSequence: ['UP', 'RIGHT', 'DOWN', 'DOWN', 'DOWN'],
-    cooldown: 90,
-    callInDelay: 3.5,
-    description: 'Massive high-explosive ordnance strike.',
-  },
-  autocannon_sentry: {
-    id: 'autocannon_sentry',
-    name: 'Deployable Autocannon Turret',
-    category: 'DEFENSIVE',
-    codeSequence: ['LEFT', 'DOWN', 'UP', 'RIGHT', 'RIGHT'],
-    cooldown: 80,
-    callInDelay: 3.0,
-    description: 'Automated 40mm anti-armor turret pod.',
-  },
-  recon_drone: {
-    id: 'recon_drone',
-    name: 'Tactical Recon Sweep Drone',
-    category: 'TACTICAL',
-    codeSequence: ['UP', 'LEFT', 'RIGHT', 'DOWN'],
-    cooldown: 40,
-    callInDelay: 1.5,
-    description: 'Deploys an aerial scanning drone to reveal all enemy patrols on tactical map.',
-  },
-  emp_pulse: {
-    id: 'emp_pulse',
-    name: 'EMP Stun Shockwave Beacon',
-    category: 'TACTICAL',
-    codeSequence: ['LEFT', 'RIGHT', 'DOWN', 'UP'],
-    cooldown: 35,
-    callInDelay: 1.0,
-    description: 'High-voltage electric pulse that stuns all nearby biological & machine units.',
-  },
+  kinetic_lance: support('kinetic_lance', 'Kinetic Lance', 'ORBITAL', ['UP', 'RIGHT', 'DOWN', 'LEFT', 'UP'], 45, 3.2, 'Precision penetrator strike.'),
+  saturation_barrage: support('saturation_barrage', 'Saturation Barrage', 'ORBITAL', ['RIGHT', 'DOWN', 'LEFT', 'UP', 'RIGHT'], 75, 5, 'Wide-area explosive barrage.'),
+  vtol_strafe: support('vtol_strafe', 'Rook VTOL Strafe', 'AIR', ['UP', 'LEFT', 'DOWN', 'RIGHT'], 50, 3, 'Autocannon fly-through.'),
+  heavy_bomb: support('heavy_bomb', 'Gravemark Heavy Bomb', 'AIR', ['UP', 'RIGHT', 'DOWN', 'DOWN', 'LEFT'], 90, 4.5, 'Delayed bunker-breaking ordnance.'),
+  incendiary_sweep: support('incendiary_sweep', 'Cinderline Sweep', 'AIR', ['RIGHT', 'RIGHT', 'DOWN', 'LEFT'], 65, 3.8, 'Persistent incendiary lane.'),
+  cluster_salvo: support('cluster_salvo', 'Mosaic Rocket Salvo', 'AIR', ['DOWN', 'UP', 'RIGHT', 'RIGHT', 'LEFT'], 70, 3.4, 'Anti-infantry cluster rockets.'),
+  supply_capsule: support('supply_capsule', 'Supply Capsule', 'SUPPLY', ['DOWN', 'DOWN', 'RIGHT', 'UP'], 60, 4, 'Ammo, grenades, and injectors.'),
+  hmg_drop: support('hmg_drop', 'Heavy Machine Gun Drop', 'SUPPLY', ['LEFT', 'DOWN', 'RIGHT', 'UP'], 70, 4, 'Crew-portable support gun.'),
+  anti_armor_drop: support('anti_armor_drop', 'Manticore Launcher Drop', 'SUPPLY', ['DOWN', 'LEFT', 'UP', 'RIGHT'], 75, 4, 'Tandem anti-armor launcher.'),
+  rail_cannon_drop: support('rail_cannon_drop', 'Rail Cannon Drop', 'SUPPLY', ['RIGHT', 'UP', 'LEFT', 'DOWN', 'RIGHT'], 100, 4.5, 'Experimental hypervelocity rifle.'),
+  autocannon_sentry: support('autocannon_sentry', 'Autocannon Sentry', 'DEFENSIVE', ['LEFT', 'DOWN', 'UP', 'RIGHT', 'RIGHT'], 80, 4.2, 'Automated anti-armor emplacement.'),
+  mg_sentry: support('mg_sentry', 'Machine Gun Sentry', 'DEFENSIVE', ['DOWN', 'UP', 'LEFT', 'RIGHT'], 60, 3.8, 'Automated suppressive gun.'),
+  missile_sentry: support('missile_sentry', 'Missile Sentry', 'DEFENSIVE', ['RIGHT', 'LEFT', 'UP', 'UP', 'DOWN'], 95, 4.4, 'Anti-air and anti-heavy launcher.'),
+  energy_shield: support('energy_shield', 'Deployable Energy Shield', 'DEFENSIVE', ['LEFT', 'RIGHT', 'UP', 'DOWN', 'LEFT'], 85, 3.5, 'Temporary hemispherical protection.'),
+  recon_drone: support('recon_drone', 'Recon Drone', 'TACTICAL', ['UP', 'LEFT', 'RIGHT', 'DOWN'], 40, 2, 'Maps patrols and weak points.'),
+  emp_pulse: support('emp_pulse', 'EMP Pulse Beacon', 'TACTICAL', ['LEFT', 'RIGHT', 'DOWN', 'UP'], 35, 2.2, 'Disrupts nearby machines.'),
 };
 
-export interface ActiveBeacon {
-  id: string;
-  supportId: string;
-  mesh: THREE.Mesh;
-  position: THREE.Vector3;
-  timer: number;
-  maxDelay: number;
-}
+export interface ActiveBeacon { id: string; supportId: string; mesh: THREE.Group; position: THREE.Vector3; velocity: THREE.Vector3; timer: number; maxDelay: number; landed: boolean; }
 
 export class CommandSupportSystem {
-  public equippedSupportIds: string[] = [
-    'kinetic_lance',
-    'supply_capsule',
-    'vtol_strafe',
-    'autocannon_sentry',
-  ];
-
+  public equippedSupportIds = ['kinetic_lance', 'supply_capsule', 'vtol_strafe', 'autocannon_sentry'];
   public cooldowns: Record<string, number> = {};
   public activeBeacons: ActiveBeacon[] = [];
-  public currentSequenceInput: ('UP' | 'DOWN' | 'LEFT' | 'RIGHT')[] = [];
-  public isInterfaceOpen: boolean = false;
+  public currentSequenceInput: Direction[] = [];
+  public isInterfaceOpen = false;
 
-  constructor() {
-    this.equippedSupportIds.forEach((id) => {
-      this.cooldowns[id] = 0;
-    });
-  }
+  constructor() { this.equippedSupportIds.forEach((id) => { this.cooldowns[id] = 0; }); }
 
-  public inputDirection(dir: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'): string | null {
-    this.currentSequenceInput.push(dir);
-
-    // Check if current input matches any equipped support option
-    for (const id of this.equippedSupportIds) {
-      const option = SUPPORT_CATALOG[id];
-      if (!option) continue;
-
-      if (this.cooldowns[id] > 0) continue;
-
-      // Check exact sequence match
-      if (this.currentSequenceInput.length === option.codeSequence.length) {
-        let match = true;
-        for (let i = 0; i < option.codeSequence.length; i++) {
-          if (option.codeSequence[i] !== this.currentSequenceInput[i]) {
-            match = false;
-            break;
-          }
-        }
-        if (match) {
-          // Sequence matched successfully!
-          this.currentSequenceInput = [];
-          this.cooldowns[id] = option.cooldown;
-          return id;
-        }
-      }
-    }
-
-    // Reset sequence if input exceeds max length (5)
-    if (this.currentSequenceInput.length >= 5) {
-      this.currentSequenceInput = [];
-    }
-
-    return null;
+  public inputDirection(direction: Direction) {
+    this.currentSequenceInput.push(direction);
+    const candidates = this.equippedSupportIds.filter((id) => this.cooldowns[id] <= 0 && SUPPORT_CATALOG[id].codeSequence.slice(0, this.currentSequenceInput.length).every((value, index) => value === this.currentSequenceInput[index]));
+    if (!candidates.length) { this.currentSequenceInput = []; return null; }
+    const match = candidates.find((id) => SUPPORT_CATALOG[id].codeSequence.length === this.currentSequenceInput.length);
+    if (!match) return null;
+    this.currentSequenceInput = [];
+    this.cooldowns[match] = SUPPORT_CATALOG[match].cooldown;
+    return match;
   }
 
   public update(dt: number, scene: THREE.Scene, onImpact: (beacon: ActiveBeacon) => void) {
-    // Update cooldowns
-    Object.keys(this.cooldowns).forEach((id) => {
-      if (this.cooldowns[id] > 0) {
-        this.cooldowns[id] = Math.max(0, this.cooldowns[id] - dt);
-      }
-    });
-
-    // Update active thrown beacons
+    Object.keys(this.cooldowns).forEach((id) => { this.cooldowns[id] = Math.max(0, this.cooldowns[id] - dt); });
     for (let i = this.activeBeacons.length - 1; i >= 0; i--) {
       const beacon = this.activeBeacons[i];
-      beacon.timer += dt;
-
-      // Beacon rotation light effect
-      beacon.mesh.rotation.y += 4.0 * dt;
-
-      if (beacon.timer >= beacon.maxDelay) {
-        onImpact(beacon);
-        scene.remove(beacon.mesh);
-        this.activeBeacons.splice(i, 1);
+      if (!beacon.landed) {
+        beacon.velocity.y -= 16 * dt;
+        beacon.position.addScaledVector(beacon.velocity, dt);
+        if (beacon.position.y <= 0.18) { beacon.position.y = 0.18; beacon.landed = true; beacon.velocity.set(0, 0, 0); }
+        beacon.mesh.position.copy(beacon.position);
+        beacon.mesh.rotation.x += dt * 7;
+      } else {
+        beacon.timer += dt;
+        beacon.mesh.rotation.y += dt * 5;
+        if (beacon.timer >= beacon.maxDelay) {
+          onImpact(beacon);
+          scene.remove(beacon.mesh);
+          this.activeBeacons.splice(i, 1);
+        }
       }
     }
   }
@@ -178,30 +73,14 @@ export class CommandSupportSystem {
   public throwBeacon(supportId: string, spawnPos: THREE.Vector3, direction: THREE.Vector3, scene: THREE.Scene) {
     const option = SUPPORT_CATALOG[supportId];
     if (!option) return;
-
-    const geo = new THREE.CylinderGeometry(0.1, 0.1, 0.4, 8);
-    const mat = new THREE.MeshBasicMaterial({ color: 0xef4444 }); // Crimson beacon light
-    const mesh = new THREE.Mesh(geo, mat);
-
-    const targetPos = spawnPos.clone().addScaledVector(direction, 18);
-    targetPos.y = 0.2; // Ground height
-    mesh.position.copy(targetPos);
+    const mesh = new THREE.Group();
+    const grenade = AssetLoader.getInstance().getModel('grenade');
+    if (grenade) { grenade.scale.setScalar(0.45); mesh.add(grenade); }
+    const light = new THREE.PointLight(0xe45c37, 8, 26);
+    mesh.add(light);
+    const position = spawnPos.clone().add(new THREE.Vector3(0, -0.7, 0));
+    mesh.position.copy(position);
     scene.add(mesh);
-
-    // Glowing beam
-    const beamGeo = new THREE.CylinderGeometry(0.05, 0.05, 12, 8);
-    const beamMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.5 });
-    const beam = new THREE.Mesh(beamGeo, beamMat);
-    beam.position.y = 6;
-    mesh.add(beam);
-
-    this.activeBeacons.push({
-      id: Math.random().toString(),
-      supportId,
-      mesh,
-      position: targetPos,
-      timer: 0,
-      maxDelay: option.callInDelay,
-    });
+    this.activeBeacons.push({ id: `beacon_${Date.now()}`, supportId, mesh, position, velocity: direction.clone().multiplyScalar(17).add(new THREE.Vector3(0, 7.5, 0)), timer: 0, maxDelay: option.callInDelay, landed: false });
   }
 }

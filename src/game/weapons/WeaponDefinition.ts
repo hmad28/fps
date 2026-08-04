@@ -1,4 +1,4 @@
-export type WeaponClass = 'assault_rifle' | 'battle_rifle' | 'smg' | 'shotgun' | 'marksman' | 'energy' | 'pistol' | 'revolver';
+export type WeaponClass = 'assault_rifle' | 'battle_rifle' | 'smg' | 'shotgun' | 'marksman' | 'energy' | 'pistol' | 'revolver' | 'launcher';
 
 export interface WeaponDef {
   id: string;
@@ -109,5 +109,23 @@ export const WEAPON_DEFINITIONS: Record<string, WeaponDef> = {
     projectileSpeed: 0,
     effectiveRange: 50,
     description: 'Reliable semi-automatic tactical sidearm.',
+  },
+  aa_manticore: {
+    id: 'aa_manticore',
+    name: 'ML-6 Manticore Launcher',
+    category: 'launcher',
+    damage: 240,
+    fireRate: 0.55,
+    magazineSize: 1,
+    maxReserveMags: 2,
+    reloadTime: 3.6,
+    recoilPitch: 0.14,
+    recoilYaw: 0.025,
+    spread: 0.004,
+    pellets: 1,
+    armorPenetration: 5,
+    projectileSpeed: 62,
+    effectiveRange: 160,
+    description: 'Single-shot recovered anti-armor launcher with tandem penetrator.',
   },
 };
